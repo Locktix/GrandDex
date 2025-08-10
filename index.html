@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandDex - Gestionnaire d'Inventaire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-card pokemon"></div>
+        <div class="floating-card onepiece"></div>
+        <div class="floating-card pokemon"></div>
+        <div class="floating-card onepiece"></div>
+    </div>
+
+    <div class="container">
+        <header class="glass-header">
+            <div class="logo">
+                <i class="fas fa-dragon"></i>
+                <h1>GrandDex</h1>
+            </div>
+            <p class="subtitle">Gestionnaire d'Inventaire Pokémon & One Piece</p>
+        </header>
+
+        <nav class="glass-nav">
+            <button class="nav-btn active" data-tab="dashboard">
+                <i class="fas fa-chart-pie"></i>
+                <span>Tableau de bord</span>
+            </button>
+            <button class="nav-btn" data-tab="pokemon-items">
+                <i class="fas fa-box"></i>
+                <span>Items Pokémon</span>
+            </button>
+            <button class="nav-btn" data-tab="pokemon-cards">
+                <i class="fas fa-id-card"></i>
+                <span>Cartes Pokémon</span>
+            </button>
+            <button class="nav-btn" data-tab="pokemon-graded">
+                <i class="fas fa-star"></i>
+                <span>Cartes Gradées Pokémon</span>
+            </button>
+            <button class="nav-btn" data-tab="onepiece-items">
+                <i class="fas fa-ship"></i>
+                <span>Items One Piece</span>
+            </button>
+            <button class="nav-btn" data-tab="onepiece-graded">
+                <i class="fas fa-crown"></i>
+                <span>Cartes Gradées One Piece</span>
+            </button>
+        </nav>
+
+        <main class="content">
+            <!-- Tableau de bord -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="glass-card stats-card">
+                        <h3><i class="fas fa-chart-line"></i> Vue d'ensemble</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="total-value">€0</span>
+                                <span class="stat-label">Valeur totale</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="total-profit">€0</span>
+                                <span class="stat-label">Bénéfice total</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="total-items">0</span>
+                                <span class="stat-label">Items en stock</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="total-cards">0</span>
+                                <span class="stat-label">Cartes en stock</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Répartition par catégorie</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Items Pokémon -->
+            <div id="pokemon-items" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-box"></i> Stock Items Pokémon</h2>
+                    <button class="add-btn" onclick="openModal('pokemon-items')">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                <div class="filters glass-card">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="pokemon-items-status-filter">
+                            <option value="">Tous</option>
+                            <option value="En stock">En stock</option>
+                            <option value="Mis en vente">Mis en vente</option>
+                            <option value="Vendu">Vendu</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Langue:</label>
+                        <select id="pokemon-items-lang-filter">
+                            <option value="">Toutes</option>
+                            <option value="FR">FR</option>
+                            <option value="EN">EN</option>
+                            <option value="JAP">JAP</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container glass-card">
+                    <table id="pokemon-items-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Bloc</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Date Achat</th>
+                                <th>Date Vente</th>
+                                <th>Différence</th>
+                                <th>État</th>
+                                <th>Langue</th>
+                                <th>Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="table-totals">
+                        <span>Total Achat: <span id="pokemon-items-total-achat">€0</span></span>
+                        <span>Total Vente: <span id="pokemon-items-total-vente">€0</span></span>
+                        <span>Bénéfice: <span id="pokemon-items-benefice">€0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes Pokémon -->
+            <div id="pokemon-cards" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-id-card"></i> Stock Cartes Pokémon (Loose)</h2>
+                    <button class="add-btn" onclick="openModal('pokemon-cards')">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                <div class="filters glass-card">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="pokemon-cards-status-filter">
+                            <option value="">Tous</option>
+                            <option value="En stock">En stock</option>
+                            <option value="Mis en vente">Mis en vente</option>
+                            <option value="Vendu">Vendu</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Type:</label>
+                        <select id="pokemon-cards-type-filter">
+                            <option value="">Tous</option>
+                            <option value="AR">AR</option>
+                            <option value="FA">FA</option>
+                            <option value="ALT">ALT</option>
+                            <option value="V">V</option>
+                            <option value="VMAX">VMAX</option>
+                            <option value="VSTAR">VSTAR</option>
+                            <option value="GOLD">GOLD</option>
+                            <option value="GX">GX</option>
+                            <option value="Promo">Promo</option>
+                            <option value="EX">EX</option>
+                            <option value="Shiny">Shiny</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container glass-card">
+                    <table id="pokemon-cards-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Bloc</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Date Achat</th>
+                                <th>Date Vente</th>
+                                <th>Différence</th>
+                                <th>État</th>
+                                <th>Langue</th>
+                                <th>Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="table-totals">
+                        <span>Total Achat: <span id="pokemon-cards-total-achat">€0</span></span>
+                        <span>Total Vente: <span id="pokemon-cards-total-vente">€0</span></span>
+                        <span>Bénéfice: <span id="pokemon-cards-benefice">€0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes Gradées Pokémon -->
+            <div id="pokemon-graded" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-star"></i> Stock Cartes Gradées Pokémon</h2>
+                    <button class="add-btn" onclick="openModal('pokemon-graded')">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                <div class="filters glass-card">
+                    <div class="filter-group">
+                        <label>Organisme:</label>
+                        <select id="pokemon-graded-org-filter">
+                            <option value="">Tous</option>
+                            <option value="PSA">PSA</option>
+                            <option value="BGS">BGS</option>
+                            <option value="CGC">CGC</option>
+                            <option value="SGC">SGC</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cotation:</label>
+                        <select id="pokemon-graded-grade-filter">
+                            <option value="">Toutes</option>
+                            <option value="10">10</option>
+                            <option value="9.5">9.5</option>
+                            <option value="9">9</option>
+                            <option value="8.5">8.5</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container glass-card">
+                    <table id="pokemon-graded-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Bloc</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Organisme</th>
+                                <th>Cotation</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Date Achat</th>
+                                <th>Date Vente</th>
+                                <th>Différence</th>
+                                <th>État</th>
+                                <th>Langue</th>
+                                <th>Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="table-totals">
+                        <span>Total Achat: <span id="pokemon-graded-total-achat">€0</span></span>
+                        <span>Total Vente: <span id="pokemon-graded-total-vente">€0</span></span>
+                        <span>Bénéfice: <span id="pokemon-graded-benefice">€0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items One Piece -->
+            <div id="onepiece-items" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-ship"></i> Stock Items One Piece</h2>
+                    <button class="add-btn" onclick="openModal('onepiece-items')">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                <div class="filters glass-card">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="onepiece-items-status-filter">
+                            <option value="">Tous</option>
+                            <option value="En stock">En stock</option>
+                            <option value="Mis en vente">Mis en vente</option>
+                            <option value="Vendu">Vendu</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Langue:</label>
+                        <select id="onepiece-items-lang-filter">
+                            <option value="">Toutes</option>
+                            <option value="FR">FR</option>
+                            <option value="EN">EN</option>
+                            <option value="JAP">JAP</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container glass-card">
+                    <table id="onepiece-items-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Bloc</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Date Achat</th>
+                                <th>Date Vente</th>
+                                <th>Différence</th>
+                                <th>État</th>
+                                <th>Langue</th>
+                                <th>Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="table-totals">
+                        <span>Total Achat: <span id="onepiece-items-total-achat">€0</span></span>
+                        <span>Total Vente: <span id="onepiece-items-total-vente">€0</span></span>
+                        <span>Bénéfice: <span id="onepiece-items-benefice">€0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes Gradées One Piece -->
+            <div id="onepiece-graded" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-crown"></i> Stock Cartes Gradées One Piece</h2>
+                    <button class="add-btn" onclick="openModal('onepiece-graded')">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                <div class="filters glass-card">
+                    <div class="filter-group">
+                        <label>Organisme:</label>
+                        <select id="onepiece-graded-org-filter">
+                            <option value="">Tous</option>
+                            <option value="PSA">PSA</option>
+                            <option value="BGS">BGS</option>
+                            <option value="CGC">CGC</option>
+                            <option value="SGC">SGC</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cotation:</label>
+                        <select id="onepiece-graded-grade-filter">
+                            <option value="">Toutes</option>
+                            <option value="10">10</option>
+                            <option value="9.5">9.5</option>
+                            <option value="9">9</option>
+                            <option value="8.5">8.5</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container glass-card">
+                    <table id="onepiece-graded-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Bloc</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Organisme</th>
+                                <th>Cotation</th>
+                                <th>Prix Achat</th>
+                                <th>Prix Vente</th>
+                                <th>Date Achat</th>
+                                <th>Date Vente</th>
+                                <th>Différence</th>
+                                <th>État</th>
+                                <th>Langue</th>
+                                <th>Note</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="table-totals">
+                        <span>Total Achat: <span id="onepiece-graded-total-achat">€0</span></span>
+                        <span>Total Vente: <span id="onepiece-graded-total-vente">€0</span></span>
+                        <span>Bénéfice: <span id="onepiece-graded-benefice">€0</span></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal pour ajouter/modifier -->
+    <div id="modal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Ajouter un élément</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="item-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" required>
+                            <option value="En stock">En stock</option>
+                            <option value="Mis en vente">Mis en vente</option>
+                            <option value="Vendu">Vendu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bloc">Bloc</label>
+                        <input type="text" id="bloc" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type" required></select>
+                    </div>
+                    <div class="form-group graded-only" style="display: none;">
+                        <label for="organisme">Organisme</label>
+                        <select id="organisme">
+                            <option value="PSA">PSA</option>
+                            <option value="BGS">BGS</option>
+                            <option value="CGC">CGC</option>
+                            <option value="SGC">SGC</option>
+                        </select>
+                    </div>
+                    <div class="form-group graded-only" style="display: none;">
+                        <label for="cotation">Cotation</label>
+                        <select id="cotation">
+                            <option value="10">10</option>
+                            <option value="9.5">9.5</option>
+                            <option value="9">9</option>
+                            <option value="8.5">8.5</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix-achat">Prix d'achat (€)</label>
+                        <input type="number" id="prix-achat" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix-vente">Prix de vente (€)</label>
+                        <input type="number" id="prix-vente" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="etat">État</label>
+                        <select id="etat" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="langue">Langue</label>
+                        <select id="langue" required>
+                            <option value="FR">FR</option>
+                            <option value="EN">EN</option>
+                            <option value="JAP">JAP</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="note">Note</label>
+                        <textarea id="note" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

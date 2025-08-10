@@ -1,0 +1,121 @@
+{
+  "pokemon-items": [
+    {
+      "id": "1",
+      "status": "En stock",
+      "bloc": "Écarlate et Violet",
+      "nom": "Booster Écarlate et Violet",
+      "type": "Booster",
+      "prixAchat": 4.50,
+      "prixVente": null,
+      "dateAchat": "2024-01-15",
+      "dateVente": null,
+      "difference": null,
+      "etat": "Scellé",
+      "langue": "FR",
+      "note": "Booster standard"
+    },
+    {
+      "id": "2",
+      "status": "Vendu",
+      "bloc": "Écarlate et Violet",
+      "nom": "ETB Écarlate et Violet",
+      "type": "ETB",
+      "prixAchat": 45.00,
+      "prixVente": 52.00,
+      "dateAchat": "2024-01-10",
+      "dateVente": "2024-02-20",
+      "difference": 7.00,
+      "etat": "Scellé",
+      "langue": "FR",
+      "note": "Vendu rapidement"
+    }
+  ],
+  "pokemon-cards": [
+    {
+      "id": "3",
+      "status": "En stock",
+      "bloc": "Écarlate et Violet",
+      "nom": "Pikachu AR",
+      "type": "AR",
+      "prixAchat": 25.00,
+      "prixVente": null,
+      "dateAchat": "2024-01-20",
+      "dateVente": null,
+      "difference": null,
+      "etat": "Near Mint",
+      "langue": "FR",
+      "note": "Carte en excellent état"
+    },
+    {
+      "id": "4",
+      "status": "Mis en vente",
+      "bloc": "Écarlate et Violet",
+      "nom": "Dracaufeu VMAX",
+      "type": "VMAX",
+      "prixAchat": 35.00,
+      "prixVente": 45.00,
+      "dateAchat": "2024-01-25",
+      "dateVente": "2024-03-01",
+      "difference": 10.00,
+      "etat": "Mint",
+      "langue": "EN",
+      "note": "Carte parfaite"
+    }
+  ],
+  "pokemon-graded": [
+    {
+      "id": "5",
+      "status": "En stock",
+      "bloc": "Écarlate et Violet",
+      "nom": "Pikachu AR PSA 10",
+      "type": "AR",
+      "organisme": "PSA",
+      "cotation": "10",
+      "prixAchat": 150.00,
+      "prixVente": null,
+      "dateAchat": "2024-02-01",
+      "dateVente": null,
+      "difference": null,
+      "etat": "Mint",
+      "langue": "EN",
+      "note": "PSA 10 parfait"
+    }
+  ],
+  "onepiece-items": [
+    {
+      "id": "6",
+      "status": "En stock",
+      "bloc": "OP-01",
+      "nom": "Booster Romance Dawn",
+      "type": "Booster",
+      "prixAchat": 5.00,
+      "prixVente": null,
+      "dateAchat": "2024-01-30",
+      "dateVente": null,
+      "difference": null,
+      "etat": "Scellé",
+      "langue": "EN",
+      "note": "Première édition"
+    }
+  ],
+  "onepiece-graded": [
+    {
+      "id": "7",
+      "status": "Vendu",
+      "bloc": "OP-01",
+      "nom": "Luffy Leader PSA 10",
+      "type": "Leader",
+      "organisme": "PSA",
+      "cotation": "10",
+      "prixAchat": 200.00,
+      "prixVente": 280.00,
+      "dateAchat": "2024-02-05",
+      "dateVente": "2024-03-15",
+      "difference": 80.00,
+      "etat": "Mint",
+      "langue": "EN",
+      "note": "Très rare, vendu rapidement"
+    }
+  ]
+}

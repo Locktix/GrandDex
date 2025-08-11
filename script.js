@@ -54,6 +54,7 @@ function initializeApp() {
     setupEventListeners();
     setupCharts();
     updateDashboard();
+    startRealtimeSync();
 }
 
 function setupPinGate() {
@@ -172,6 +173,33 @@ async function autoLoadFromCloud() {
         }
     } catch (e) {
         console.warn('Chargement cloud au démarrage échoué:', e.message);
+    }
+}
+
+// Sync temps réel depuis Firestore vers l'app (et UI)
+function startRealtimeSync() {
+    try {
+        if (!window.firebaseCloud?.subscribeCloud) return;
+        const deviceId = window.firebaseCloud.getDeviceId();
+        window.__granddex_unsub && window.__granddex_unsub();
+        window.__granddex_unsub = window.firebaseCloud.subscribeCloud(deviceId, (cloudData) => {
+            if (!cloudData) return;
+            const localStr = localStorage.getItem('granddex-data');
+            const localData = localStr ? JSON.parse(localStr) : null;
+            const remoteStr = JSON.stringify(cloudData);
+            const localStrCanon = JSON.stringify(localData);
+            if (remoteStr === localStrCanon) return;
+            currentData = cloudData;
+            localStorage.setItem('granddex-data', remoteStr);
+            updateDashboard();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id !== 'dashboard') {
+                updateTable(activeTab.id);
+            }
+            console.debug('Mise à jour en temps réel reçue.');
+        });
+    } catch (e) {
+        console.warn('Activation du temps réel échouée:', e.message);
     }
 }
 

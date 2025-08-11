@@ -23,6 +23,7 @@
                 <h1>GrandDex</h1>
             </div>
             <p class="subtitle">Gestionnaire d'Inventaire Pokémon & One Piece</p>
+            
         </header>
 
         <nav class="glass-nav">
@@ -428,6 +429,19 @@
         </main>
     </div>
 
+    <!-- Portail d'accès (code à 6 chiffres) -->
+    <div id="pin-gate" class="pin-overlay">
+        <div class="pin-card glass-card">
+            <h2 style="margin-bottom:10px;">Accès sécurisé</h2>
+            <p class="subtitle" style="margin-bottom:20px;">Entrez votre code à 6 chiffres</p>
+            <div class="pin-input-group">
+                <input id="pin-input" type="password" inputmode="numeric" pattern="\\d{6}" maxlength="6" placeholder="••••••" autocomplete="one-time-code" />
+                <button id="pin-submit" class="btn-primary">Entrer</button>
+            </div>
+            <p id="pin-error" class="pin-error" style="display:none;">Code incorrect</p>
+        </div>
+    </div>
+
     <!-- Modal pour ajouter/modifier -->
     <div id="modal" class="modal">
         <div class="modal-content glass-card">
@@ -531,6 +545,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="firebase.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

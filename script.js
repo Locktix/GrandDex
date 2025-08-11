@@ -49,10 +49,68 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+    setupPinGate();
     loadData();
     setupEventListeners();
     setupCharts();
     updateDashboard();
+}
+
+function setupPinGate() {
+    const PIN_STORAGE_KEY = 'granddex-pin';
+    const ACCESS_KEY = 'granddex-access-granted';
+    const overlay = document.getElementById('pin-gate');
+    const input = document.getElementById('pin-input');
+    const submit = document.getElementById('pin-submit');
+    const error = document.getElementById('pin-error');
+
+    if (!overlay || !input || !submit) return;
+
+    // Si déjà validé dans cette session, ne pas bloquer
+    if (sessionStorage.getItem(ACCESS_KEY) === '1') {
+        overlay.style.display = 'none';
+        return;
+    }
+
+    // Si aucun PIN défini, demander d'en créer un d'abord
+    let savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+    if (!savedPin) {
+        // Premier lancement: l'utilisateur crée son code
+        overlay.querySelector('h2').textContent = 'Créer votre code';
+        overlay.querySelector('.subtitle').textContent = 'Choisissez un code à 6 chiffres';
+    }
+
+    function tryValidate() {
+        const value = (input.value || '').trim();
+        if (!/^\d{6}$/.test(value)) {
+            error.textContent = 'Entrez 6 chiffres';
+            error.style.display = 'block';
+            return;
+        }
+        if (!savedPin) {
+            // on enregistre le nouveau PIN
+            localStorage.setItem(PIN_STORAGE_KEY, value);
+            savedPin = value;
+            sessionStorage.setItem(ACCESS_KEY, '1');
+            overlay.style.display = 'none';
+            return;
+        }
+        if (value === savedPin) {
+            sessionStorage.setItem(ACCESS_KEY, '1');
+            overlay.style.display = 'none';
+        } else {
+            error.textContent = 'Code incorrect';
+            error.style.display = 'block';
+            input.select();
+        }
+    }
+
+    submit.addEventListener('click', tryValidate);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            tryValidate();
+        }
+    });
 }
 
 // Gestion des événements
@@ -77,6 +135,44 @@ function setupEventListeners() {
             closeModal();
         }
     });
+    // Chargement cloud automatique au démarrage
+    autoLoadFromCloud();
+}
+
+// Debounce sauvegarde cloud
+let cloudSaveTimer = null;
+function scheduleCloudSave() {
+    if (!window.firebaseCloud?.saveCloud) return; // si firebase non dispo, ignorer
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(async () => {
+        try {
+            const deviceId = window.firebaseCloud.getDeviceId();
+            await window.firebaseCloud.saveCloud(deviceId, currentData);
+            console.debug('Sauvegarde cloud effectuée');
+        } catch (e) {
+            console.warn('Sauvegarde cloud échouée:', e.message);
+        }
+    }, 800);
+}
+
+async function autoLoadFromCloud() {
+    try {
+        if (!window.firebaseCloud?.loadCloud) return;
+        const deviceId = window.firebaseCloud.getDeviceId();
+        const cloudData = await window.firebaseCloud.loadCloud(deviceId);
+        if (cloudData && typeof cloudData === 'object') {
+            currentData = cloudData;
+            localStorage.setItem('granddex-data', JSON.stringify(currentData));
+            updateDashboard();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id !== 'dashboard') {
+                updateTable(activeTab.id);
+            }
+            console.debug('Données cloud chargées au démarrage');
+        }
+    } catch (e) {
+        console.warn('Chargement cloud au démarrage échoué:', e.message);
+    }
 }
 
 function setupFilters() {
@@ -131,6 +227,7 @@ function loadData() {
 
 function saveData() {
     localStorage.setItem('granddex-data', JSON.stringify(currentData));
+    scheduleCloudSave();
 }
 
 function generateId() {

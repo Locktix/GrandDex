@@ -18,9 +18,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 function getDeviceId() {
-  // Pour compat: renvoie l'UID Firebase si disponible; sinon un ID local provisoire
-  const user = auth.currentUser;
-  if (user?.uid) return user.uid;
+  // Utilise le PIN comme identifiant unique pour séparer les utilisateurs
+  const pin = localStorage.getItem('granddex-pin');
+  if (pin) return `user_${pin}`;
+  
+  // Fallback pour compatibilité
   let id = localStorage.getItem('granddex-device-id');
   if (!id) {
     id = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
@@ -29,33 +31,30 @@ function getDeviceId() {
   return id;
 }
 
+let signingInPromise = null;
 async function ensureSignedIn() {
-  return new Promise((resolve, reject) => {
-    onAuthStateChanged(auth, async (user) => {
-      try {
-        if (!user) {
-          await signInAnonymously(auth);
-        }
-        resolve(auth.currentUser);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
+  if (auth.currentUser) return auth.currentUser;
+  if (!signingInPromise) {
+    signingInPromise = signInAnonymously(auth)
+      .then((cred) => cred.user)
+      .catch((err) => {
+        signingInPromise = null;
+        throw err;
+      });
+  }
+  return signingInPromise;
 }
 
 async function saveCloud(deviceId, data) {
   await ensureSignedIn();
-  // Forcer l'utilisation de l'UID comme identifiant de document (aligné avec les règles)
-  const uid = auth.currentUser.uid;
-  const ref = doc(db, 'granddex', uid);
+  // Utilise le deviceId (basé sur le PIN) comme identifiant de document
+  const ref = doc(db, 'granddex', deviceId);
   await setDoc(ref, { data, updatedAt: serverTimestamp() }, { merge: true });
 }
 
 async function loadCloud(deviceId) {
   await ensureSignedIn();
-  const uid = auth.currentUser.uid;
-  const ref = doc(db, 'granddex', uid);
+  const ref = doc(db, 'granddex', deviceId);
   const snap = await getDoc(ref);
   if (snap.exists()) {
     return snap.data().data || null;
@@ -64,20 +63,33 @@ async function loadCloud(deviceId) {
 }
 
 function subscribeCloud(deviceId, onData) {
-  // Renvoie une fonction d'unsubscribe
-  const uid = auth.currentUser?.uid || deviceId;
-  return onSnapshot(doc(db, 'granddex', uid), (snap) => {
-    try {
-      if (snap.exists()) {
-        const payload = snap.data();
-        onData && onData(payload?.data ?? null);
-      } else {
-        onData && onData(null);
-      }
-    } catch (e) {
-      console.warn('Erreur onSnapshot:', e);
-    }
-  });
+  // S'assure d'être connecté avant de s'abonner, et renvoie un unsubscribe sûr
+  let unsubscribe = null;
+  ensureSignedIn()
+    .then(() => {
+      unsubscribe = onSnapshot(doc(db, 'granddex', deviceId), (snap) => {
+        try {
+          if (snap.exists()) {
+            const payload = snap.data();
+            onData && onData(payload?.data ?? null);
+          } else {
+            onData && onData(null);
+          }
+        } catch (e) {
+          console.warn('Erreur onSnapshot:', e);
+        }
+      }, (err) => {
+        console.warn('Abonnement Firestore refusé:', err?.message || err);
+      });
+    })
+    .catch((err) => {
+      console.warn('Connexion anonyme impossible pour le temps réel:', err?.message || err);
+    });
+
+  return function safeUnsubscribe() {
+    try { unsubscribe && unsubscribe(); } catch (_) {}
+    unsubscribe = null;
+  };
 }
 
 // Expose au scope global (pour scripts non-modules)

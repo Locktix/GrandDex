@@ -54,7 +54,6 @@ function initializeApp() {
     setupEventListeners();
     setupCharts();
     updateDashboard();
-    startRealtimeSync();
 }
 
 function setupPinGate() {
@@ -67,9 +66,10 @@ function setupPinGate() {
 
     if (!overlay || !input || !submit) return;
 
-    // Si déjà validé dans cette session, ne pas bloquer
+    // Si déjà validé dans cette session, ne pas bloquer et initialiser la sync
     if (sessionStorage.getItem(ACCESS_KEY) === '1') {
         overlay.style.display = 'none';
+        initCloudSync();
         return;
     }
 
@@ -94,11 +94,13 @@ function setupPinGate() {
             savedPin = value;
             sessionStorage.setItem(ACCESS_KEY, '1');
             overlay.style.display = 'none';
+            initCloudSync();
             return;
         }
         if (value === savedPin) {
             sessionStorage.setItem(ACCESS_KEY, '1');
             overlay.style.display = 'none';
+            initCloudSync();
         } else {
             error.textContent = 'Code incorrect';
             error.style.display = 'block';
@@ -136,14 +138,14 @@ function setupEventListeners() {
             closeModal();
         }
     });
-    // Chargement cloud automatique au démarrage
-    autoLoadFromCloud();
 }
 
 // Debounce sauvegarde cloud
 let cloudSaveTimer = null;
 function scheduleCloudSave() {
     if (!window.firebaseCloud?.saveCloud) return; // si firebase non dispo, ignorer
+    // Sauvegarde uniquement quand la session est authentifiée par PIN
+    if (!isAuthenticatedSession()) return;
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(async () => {
         try {
@@ -156,8 +158,24 @@ function scheduleCloudSave() {
     }, 800);
 }
 
+function isAuthenticatedSession() {
+    try {
+        const hasPin = !!localStorage.getItem('granddex-pin');
+        const granted = sessionStorage.getItem('granddex-access-granted') === '1';
+        return hasPin && granted;
+    } catch (_) {
+        return false;
+    }
+}
+
+function initCloudSync() {
+    autoLoadFromCloud();
+    startRealtimeSync();
+}
+
 async function autoLoadFromCloud() {
     try {
+        if (!isAuthenticatedSession()) return;
         if (!window.firebaseCloud?.loadCloud) return;
         const deviceId = window.firebaseCloud.getDeviceId();
         const cloudData = await window.firebaseCloud.loadCloud(deviceId);
@@ -179,6 +197,7 @@ async function autoLoadFromCloud() {
 // Sync temps réel depuis Firestore vers l'app (et UI)
 function startRealtimeSync() {
     try {
+        if (!isAuthenticatedSession()) return;
         if (!window.firebaseCloud?.subscribeCloud) return;
         const deviceId = window.firebaseCloud.getDeviceId();
         window.__granddex_unsub && window.__granddex_unsub();

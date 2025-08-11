@@ -643,6 +643,30 @@ tr:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
+/* Footer */
+.glass-footer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    margin: 20px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content p {
+    margin: 5px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.footer-content p:first-child {
+    font-weight: 500;
+    font-size: 16px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .container {

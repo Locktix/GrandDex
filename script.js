@@ -10,10 +10,10 @@ const TYPE_CONFIG = {
         'Valisette'
     ],
     'pokemon-cards': [
-        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny'
+        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace'
     ],
     'pokemon-graded': [
-        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny'
+        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace'
     ],
     'onepiece-items': [
         'Display', 'ETB', 'Booster', 'Mini Tin', 'Display Mini Tins', 'Coffret'
@@ -138,6 +138,26 @@ function setupEventListeners() {
             closeModal();
         }
     });
+    
+    // Fermeture de la modal de suppression
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'delete-modal') {
+            closeDeleteModal();
+        }
+    });
+    
+    // Fermeture de la modal d'import
+    document.getElementById('import-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'import-modal') {
+            closeImportModal();
+        }
+    });
+    
+    // Mise à jour du texte du bouton selon la quantité
+    document.getElementById('quantite').addEventListener('input', updateSubmitButtonText);
+    
+    // Initialiser le tri des colonnes
+    setupTableSorting();
 }
 
 // Debounce sauvegarde cloud
@@ -240,6 +260,25 @@ function setupFilters() {
             });
         }
     });
+    
+    // Ajouter les event listeners pour les barres de recherche
+    const searchSelectors = [
+        'search-pokemon-items',
+        'search-pokemon-cards', 
+        'search-pokemon-graded',
+        'search-onepiece-items',
+        'search-onepiece-graded'
+    ];
+    
+    searchSelectors.forEach(selector => {
+        const element = document.getElementById(selector);
+        if (element) {
+            element.addEventListener('input', () => {
+                const category = selector.replace('search-', '');
+                filterTable(category);
+            });
+        }
+    });
 }
 
 // Navigation entre les onglets
@@ -289,6 +328,8 @@ function openModal(category, itemId = null) {
     const modal = document.getElementById('modal');
     const title = document.getElementById('modal-title');
     const form = document.getElementById('item-form');
+    const submitText = document.getElementById('submit-text');
+    const quantiteInput = document.getElementById('quantite');
     
     // Réinitialiser le formulaire
     form.reset();
@@ -307,12 +348,17 @@ function openModal(category, itemId = null) {
     // Remplir le formulaire si on édite
     if (itemId) {
         title.textContent = 'Modifier un élément';
+        submitText.textContent = 'Modifier';
+        quantiteInput.style.display = 'none';
         const item = currentData[category].find(item => item.id === itemId);
         if (item) {
             fillFormWithData(item);
         }
     } else {
         title.textContent = 'Ajouter un élément';
+        submitText.textContent = 'Enregistrer';
+        quantiteInput.style.display = 'block';
+        quantiteInput.value = '1';
     }
     
     modal.style.display = 'block';
@@ -370,8 +416,39 @@ function fillFormWithData(item) {
 function handleFormSubmit(e) {
     e.preventDefault();
     
+    const quantite = parseInt(document.getElementById('quantite').value) || 1;
+    
+    if (currentEditingId) {
+        // Modifier l'élément existant (pas de création en lot)
+        const formData = createFormData();
+        const index = currentData[currentCategory].findIndex(item => item.id === currentEditingId);
+        if (index !== -1) {
+            currentData[currentCategory][index] = formData;
+        }
+        saveData();
+        updateTable(currentCategory);
+        updateDashboard();
+        closeModal();
+    } else {
+        // Création en lot
+        if (quantite === 1) {
+            // Créer une seule entrée
+            const formData = createFormData();
+            currentData[currentCategory].push(formData);
+            saveData();
+            updateTable(currentCategory);
+            updateDashboard();
+            closeModal();
+        } else {
+            // Créer plusieurs entrées
+            createMultipleItems(quantite);
+        }
+    }
+}
+
+function createFormData() {
     const formData = {
-        id: currentEditingId || generateId(),
+        id: generateId(),
         status: document.getElementById('status').value,
         bloc: document.getElementById('bloc').value,
         nom: document.getElementById('nom').value,
@@ -392,21 +469,380 @@ function handleFormSubmit(e) {
     // Calculer la différence
     formData.difference = formData.prixVente ? formData.prixVente - formData.prixAchat : null;
     
-    if (currentEditingId) {
-        // Modifier l'élément existant
-        const index = currentData[currentCategory].findIndex(item => item.id === currentEditingId);
-        if (index !== -1) {
-            currentData[currentCategory][index] = formData;
-        }
-    } else {
-        // Ajouter un nouvel élément
-        currentData[currentCategory].push(formData);
+    return formData;
+}
+
+function createMultipleItems(quantite) {
+    const items = [];
+    
+    for (let i = 0; i < quantite; i++) {
+        const formData = createFormData();
+        items.push(formData);
     }
     
+    // Ajouter tous les éléments
+    currentData[currentCategory].push(...items);
+    
+    // Sauvegarder et mettre à jour
     saveData();
     updateTable(currentCategory);
     updateDashboard();
+    
+    // Afficher un message de confirmation
+    showSuccessMessage(`${quantite} entrées créées avec succès !`);
+    
     closeModal();
+}
+
+function showSuccessMessage(message) {
+    // Créer un toast de succès
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Afficher le toast
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    // Le masquer après 3 secondes
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+// Fonctions de tri des colonnes
+function setupTableSorting() {
+    // Ajouter les event listeners pour tous les en-têtes triables
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => handleColumnSort(th));
+    });
+}
+
+function handleColumnSort(headerElement) {
+    const column = headerElement.dataset.sort;
+    const table = headerElement.closest('table');
+    const category = getCategoryFromTable(table);
+    
+    if (!category) return;
+    
+    // Déterminer la direction du tri
+    if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortColumn = column;
+        currentSortDirection = 'asc';
+    }
+    
+    // Mettre à jour l'apparence des en-têtes
+    updateSortHeaders(headerElement);
+    
+    // Trier les données
+    sortTableData(category, column, currentSortDirection);
+    
+    // Mettre à jour l'affichage
+    updateTable(category);
+}
+
+function updateSortHeaders(activeHeader) {
+    // Réinitialiser tous les en-têtes
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.classList.remove('active', 'asc', 'desc');
+    });
+    
+    // Marquer l'en-tête actif
+    activeHeader.classList.add('active');
+    activeHeader.classList.add(currentSortDirection);
+}
+
+function sortTableData(category, column, direction) {
+    const data = currentData[category];
+    
+    data.sort((a, b) => {
+        let aValue = a[column];
+        let bValue = b[column];
+        
+        // Gérer les valeurs null/undefined
+        if (aValue === null || aValue === undefined) aValue = '';
+        if (bValue === null || bValue === undefined) bValue = '';
+        
+        // Détecter si c'est un nombre
+        const aNum = parseFloat(aValue);
+        const bNum = parseFloat(bValue);
+        const isNumeric = !isNaN(aNum) && !isNaN(bNum);
+        
+        let comparison = 0;
+        
+        if (isNumeric) {
+            // Tri numérique
+            comparison = aNum - bNum;
+        } else {
+            // Tri alphabétique
+            comparison = String(aValue).localeCompare(String(bValue), 'fr', { numeric: true });
+        }
+        
+        // Appliquer la direction du tri
+        return direction === 'asc' ? comparison : -comparison;
+    });
+}
+
+function getCategoryFromTable(table) {
+    const tableId = table.id;
+    if (tableId.includes('pokemon-items')) return 'pokemon-items';
+    if (tableId.includes('pokemon-cards')) return 'pokemon-cards';
+    if (tableId.includes('pokemon-graded')) return 'pokemon-graded';
+    if (tableId.includes('onepiece-items')) return 'onepiece-items';
+    if (tableId.includes('onepiece-graded')) return 'onepiece-graded';
+    return null;
+}
+
+// Variables pour l'import
+let importCategory = null;
+let parsedImportData = null;
+
+// Fonctions d'import Google Sheets
+function openImportModal(category) {
+    importCategory = category;
+    document.getElementById('import-modal').style.display = 'block';
+    document.getElementById('import-data').value = '';
+    document.getElementById('preview-table').innerHTML = '';
+    document.getElementById('execute-import-btn').disabled = true;
+    parsedImportData = null;
+}
+
+function closeImportModal() {
+    document.getElementById('import-modal').style.display = 'none';
+    importCategory = null;
+    parsedImportData = null;
+}
+
+function previewImport() {
+    const data = document.getElementById('import-data').value.trim();
+    const separator = document.getElementById('import-separator').value;
+    
+    if (!data) {
+        showErrorMessage('Veuillez entrer des données à importer');
+        return;
+    }
+    
+    try {
+        const parsed = parseImportData(data, separator, importCategory);
+        if (parsed && parsed.length > 0) {
+            parsedImportData = parsed;
+            showImportPreview(parsed, importCategory);
+            document.getElementById('execute-import-btn').disabled = false;
+        } else {
+            showErrorMessage('Aucune donnée valide trouvée. Vérifiez le format et le séparateur.');
+        }
+    } catch (error) {
+        showErrorMessage('Erreur lors du parsing des données: ' + error.message);
+    }
+}
+
+function parseImportData(data, separator, category) {
+    const lines = data.split('\n').filter(line => line.trim());
+    const separatorChar = getSeparatorChar(separator);
+    
+    return lines.map((line, index) => {
+        const columns = line.split(separatorChar).map(col => col.trim());
+        
+        switch (category) {
+            case 'pokemon-items':
+                return parsePokemonItem(columns, index);
+            case 'pokemon-cards':
+                return parsePokemonCard(columns, index);
+            case 'pokemon-graded':
+            case 'onepiece-graded':
+                return parseGradedCard(columns, index);
+            case 'onepiece-items':
+                return parseOnePieceItem(columns, index);
+            default:
+                throw new Error('Catégorie non reconnue');
+        }
+    });
+}
+
+function getSeparatorChar(separator) {
+    switch (separator) {
+        case 'tab': return '\t';
+        case 'comma': return ',';
+        case 'semicolon': return ';';
+        default: return '\t';
+    }
+}
+
+function parsePokemonItem(columns, index) {
+    if (columns.length < 9) {
+        throw new Error(`Ligne ${index + 1}: Format invalide. Attendu: Status | Bloc | Type | Nom | Prix Achat | Prix Vente | Différence | État | Langue`);
+    }
+    
+    return {
+        status: columns[0] || 'En stock',
+        bloc: columns[1] || '',
+        type: columns[2] || '',
+        nom: columns[3] || '',
+        prixAchat: parseFloat(columns[4]?.replace('€', '').replace(',', '.')) || 0,
+        prixVente: columns[5] ? parseFloat(columns[5].replace('€', '').replace(',', '.')) : null,
+        difference: columns[6] ? parseFloat(columns[6].replace('€', '').replace(',', '.')) : null,
+        etat: columns[7] || 'Scellé',
+        langue: columns[8] || 'FR'
+    };
+}
+
+function parsePokemonCard(columns, index) {
+    if (columns.length < 9) {
+        throw new Error(`Ligne ${index + 1}: Format invalide. Attendu: Langue | Status | Bloc | Nom | Type | Prix Achat | Prix Vente | Différence | État`);
+    }
+    
+    return {
+        langue: columns[0] || 'FR',
+        status: columns[1] || 'En stock',
+        bloc: columns[2] || '',
+        nom: columns[3] || '',
+        type: columns[4] || '',
+        prixAchat: parseFloat(columns[5]?.replace('€', '').replace(',', '.')) || 0,
+        prixVente: columns[6] ? parseFloat(columns[6].replace('€', '').replace(',', '.')) : null,
+        difference: columns[7] ? parseFloat(columns[7].replace('€', '').replace(',', '.')) : null,
+        etat: columns[8] || 'Mint'
+    };
+}
+
+function parseGradedCard(columns, index) {
+    if (columns.length < 11) {
+        throw new Error(`Ligne ${index + 1}: Format invalide. Attendu: Status | Nom | Organisme | Cotation | Type | Prix Achat | Prix Vente | Différence | État | Note | Langue`);
+    }
+    
+    return {
+        status: columns[0] || 'En stock',
+        nom: columns[1] || '',
+        organisme: columns[2] || '',
+        cotation: columns[3] || '',
+        type: columns[4] || '',
+        prixAchat: parseFloat(columns[5]?.replace('€', '').replace(',', '.')) || 0,
+        prixVente: columns[6] ? parseFloat(columns[6].replace('€', '').replace(',', '.')) : null,
+        difference: columns[7] ? parseFloat(columns[7].replace('€', '').replace(',', '.')) : null,
+        etat: columns[8] || 'Mint',
+        note: columns[9] || '',
+        langue: columns[10] || 'FR'
+    };
+}
+
+function parseOnePieceItem(columns, index) {
+    // Même format que les items Pokémon
+    return parsePokemonItem(columns, index);
+}
+
+function showImportPreview(data, category) {
+    const previewContainer = document.getElementById('preview-table');
+    const headers = getHeadersForCategory(category);
+    
+    let html = '<table class="preview-table"><thead><tr>';
+    headers.forEach(header => {
+        html += `<th>${header}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+    
+    data.slice(0, 5).forEach(item => { // Afficher seulement les 5 premières lignes
+        html += '<tr>';
+        Object.values(item).forEach(value => {
+            html += `<td>${value || '-'}</td>`;
+        });
+        html += '</tr>';
+    });
+    
+    if (data.length > 5) {
+        html += `<tr><td colspan="${headers.length}" style="text-align: center; color: var(--text-secondary);">... et ${data.length - 5} autres lignes</td></tr>`;
+    }
+    
+    html += '</tbody></table>';
+    previewContainer.innerHTML = html;
+}
+
+function getHeadersForCategory(category) {
+    switch (category) {
+        case 'pokemon-items':
+        case 'onepiece-items':
+            return ['Status', 'Bloc', 'Type', 'Nom', 'Prix Achat', 'Prix Vente', 'Différence', 'État', 'Langue'];
+        case 'pokemon-cards':
+            return ['Langue', 'Status', 'Bloc', 'Nom', 'Type', 'Prix Achat', 'Prix Vente', 'Différence', 'État'];
+        case 'pokemon-graded':
+        case 'onepiece-graded':
+            return ['Status', 'Nom', 'Organisme', 'Cotation', 'Type', 'Prix Achat', 'Prix Vente', 'Différence', 'État', 'Note', 'Langue'];
+        default:
+            return [];
+    }
+}
+
+function executeImport() {
+    if (!parsedImportData || !importCategory) {
+        showErrorMessage('Aucune donnée à importer');
+        return;
+    }
+    
+    try {
+        // Ajouter les données importées
+        parsedImportData.forEach(item => {
+            item.id = generateId();
+            item.note = item.note || '';
+            
+            // Calculer la différence si elle n'est pas fournie
+            if (item.difference === null && item.prixVente !== null) {
+                item.difference = item.prixVente - item.prixAchat;
+            }
+            
+            currentData[importCategory].push(item);
+        });
+        
+        // Sauvegarder et mettre à jour
+        saveData();
+        updateTable(importCategory);
+        updateDashboard();
+        
+        // Afficher le message de succès
+        showSuccessMessage(`${parsedImportData.length} éléments importés avec succès !`);
+        
+        // Fermer la modal
+        closeImportModal();
+        
+    } catch (error) {
+        showErrorMessage('Erreur lors de l\'import: ' + error.message);
+    }
+}
+
+function showErrorMessage(message) {
+    // Créer un toast d'erreur
+    const toast = document.createElement('div');
+    toast.className = 'error-toast';
+    toast.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Afficher le toast
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    // Le masquer après 4 secondes
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
+}
+
+function updateSubmitButtonText() {
+    const quantite = parseInt(document.getElementById('quantite').value) || 1;
+    const submitText = document.getElementById('submit-text');
+    
+    if (quantite === 1) {
+        submitText.textContent = 'Enregistrer';
+    } else {
+        submitText.textContent = `Créer ${quantite} entrées`;
+    }
 }
 
 // Mise à jour des tableaux
@@ -499,6 +935,7 @@ function filterTable(category) {
     const typeFilter = document.getElementById(`${category}-type-filter`)?.value;
     const orgFilter = document.getElementById(`${category}-org-filter`)?.value;
     const gradeFilter = document.getElementById(`${category}-grade-filter`)?.value;
+    const searchFilter = document.getElementById(`search-${category}`)?.value?.toLowerCase();
     
     let filteredData = data.filter(item => {
         if (statusFilter && item.status !== statusFilter) return false;
@@ -506,6 +943,24 @@ function filterTable(category) {
         if (typeFilter && item.type !== typeFilter) return false;
         if (orgFilter && item.organisme !== orgFilter) return false;
         if (gradeFilter && item.cotation !== gradeFilter) return false;
+        
+        // Filtre par recherche textuelle
+        if (searchFilter) {
+            const searchableText = [
+                item.status,
+                item.bloc,
+                item.nom,
+                item.type,
+                item.etat,
+                item.langue,
+                item.note,
+                item.organisme,
+                item.cotation
+            ].filter(Boolean).join(' ').toLowerCase();
+            
+            if (!searchableText.includes(searchFilter)) return false;
+        }
+        
         return true;
     });
     
@@ -520,18 +975,47 @@ function filterTable(category) {
     });
 }
 
+// Variables pour la suppression
+let itemToDelete = null;
+
+// Variables pour le tri
+let currentSortColumn = null;
+let currentSortDirection = 'asc';
+
 // Actions sur les éléments
 function editItem(category, itemId) {
     openModal(category, itemId);
 }
 
 function deleteItem(category, itemId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-        currentData[category] = currentData[category].filter(item => item.id !== itemId);
-        saveData();
-        updateTable(category);
-        updateDashboard();
-    }
+    const item = currentData[category].find(item => item.id === itemId);
+    if (!item) return;
+    
+    itemToDelete = { category, itemId };
+    
+    // Afficher les détails de l'élément à supprimer
+    document.getElementById('delete-item-name').textContent = item.nom;
+    document.getElementById('delete-item-category').textContent = getCategoryDisplayName(category);
+    
+    // Ouvrir la modal de confirmation
+    document.getElementById('delete-modal').style.display = 'block';
+}
+
+function closeDeleteModal() {
+    document.getElementById('delete-modal').style.display = 'none';
+    itemToDelete = null;
+}
+
+function confirmDelete() {
+    if (!itemToDelete) return;
+    
+    const { category, itemId } = itemToDelete;
+    currentData[category] = currentData[category].filter(item => item.id !== itemId);
+    saveData();
+    updateTable(category);
+    updateDashboard();
+    
+    closeDeleteModal();
 }
 
 // Tableau de bord

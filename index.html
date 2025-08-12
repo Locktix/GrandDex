@@ -92,11 +92,20 @@
             <div id="pokemon-items" class="tab-content">
                 <div class="tab-header">
                     <h2><i class="fas fa-box"></i> Stock Items Pokémon</h2>
-                    <button class="add-btn" onclick="openModal('pokemon-items')">
-                        <i class="fas fa-plus"></i> Ajouter
-                    </button>
+                    <div class="header-actions">
+                        <button class="import-btn" onclick="openImportModal('pokemon-items')">
+                            <i class="fas fa-file-import"></i> Import Google Sheets
+                        </button>
+                        <button class="add-btn" onclick="openModal('pokemon-items')">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
                 </div>
                 <div class="filters glass-card">
+                    <div class="search-group">
+                        <label for="search-pokemon-items">Recherche:</label>
+                        <input type="text" id="search-pokemon-items" placeholder="Rechercher par nom, type, bloc...">
+                    </div>
                     <div class="filter-group">
                         <label>Status:</label>
                         <select id="pokemon-items-status-filter">
@@ -113,6 +122,7 @@
                             <option value="FR">FR</option>
                             <option value="EN">EN</option>
                             <option value="JAP">JAP</option>
+                            <option value="CH">CH</option>
                         </select>
                     </div>
                 </div>
@@ -120,18 +130,36 @@
                     <table id="pokemon-items-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Bloc</th>
-                                <th>Nom</th>
-                                <th>Type</th>
-                                <th>Prix Achat</th>
-                                <th>Prix Vente</th>
-                                <th>Date Achat</th>
-                                <th>Date Vente</th>
-                                <th>Différence</th>
-                                <th>État</th>
-                                <th>Langue</th>
-                                <th>Note</th>
+                                <th class="sortable" data-sort="status">
+                                    Status <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="bloc">
+                                    Bloc <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="nom">
+                                    Nom <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="type">
+                                    Type <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixAchat">
+                                    Prix Achat <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixVente">
+                                    Prix Vente <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="difference">
+                                    Différence <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="etat">
+                                    État <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="langue">
+                                    Langue <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="note">
+                                    Note <i class="sort-icon"></i>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -149,11 +177,20 @@
             <div id="pokemon-cards" class="tab-content">
                 <div class="tab-header">
                     <h2><i class="fas fa-id-card"></i> Stock Cartes Pokémon (Loose)</h2>
-                    <button class="add-btn" onclick="openModal('pokemon-cards')">
-                        <i class="fas fa-plus"></i> Ajouter
-                    </button>
+                    <div class="header-actions">
+                        <button class="import-btn" onclick="openImportModal('pokemon-cards')">
+                            <i class="fas fa-file-import"></i> Import Google Sheets
+                        </button>
+                        <button class="add-btn" onclick="openModal('pokemon-cards')">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
                 </div>
                 <div class="filters glass-card">
+                    <div class="search-group">
+                        <label for="search-pokemon-cards">Recherche:</label>
+                        <input type="text" id="search-pokemon-cards" placeholder="Rechercher par nom, type, bloc...">
+                    </div>
                     <div class="filter-group">
                         <label>Status:</label>
                         <select id="pokemon-cards-status-filter">
@@ -178,6 +215,7 @@
                             <option value="Promo">Promo</option>
                             <option value="EX">EX</option>
                             <option value="Shiny">Shiny</option>
+                            <option value="Ace">Ace</option>
                         </select>
                     </div>
                 </div>
@@ -185,18 +223,36 @@
                     <table id="pokemon-cards-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Bloc</th>
-                                <th>Nom</th>
-                                <th>Type</th>
-                                <th>Prix Achat</th>
-                                <th>Prix Vente</th>
-                                <th>Date Achat</th>
-                                <th>Date Vente</th>
-                                <th>Différence</th>
-                                <th>État</th>
-                                <th>Langue</th>
-                                <th>Note</th>
+                                <th class="sortable" data-sort="status">
+                                    Status <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="bloc">
+                                    Bloc <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="nom">
+                                    Nom <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="type">
+                                    Type <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixAchat">
+                                    Prix Achat <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixVente">
+                                    Prix Vente <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="difference">
+                                    Différence <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="etat">
+                                    État <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="langue">
+                                    Langue <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="note">
+                                    Note <i class="sort-icon"></i>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -214,21 +270,31 @@
             <div id="pokemon-graded" class="tab-content">
                 <div class="tab-header">
                     <h2><i class="fas fa-star"></i> Stock Cartes Gradées Pokémon</h2>
-                    <button class="add-btn" onclick="openModal('pokemon-graded')">
-                        <i class="fas fa-plus"></i> Ajouter
-                    </button>
+                    <div class="header-actions">
+                        <button class="import-btn" onclick="openImportModal('pokemon-graded')">
+                            <i class="fas fa-file-import"></i> Import Google Sheets
+                        </button>
+                        <button class="add-btn" onclick="openModal('pokemon-graded')">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
                 </div>
                 <div class="filters glass-card">
+                    <div class="search-group">
+                        <label for="search-pokemon-graded">Recherche:</label>
+                        <input type="text" id="search-pokemon-graded" placeholder="Rechercher par nom, organisme, cotation...">
+                    </div>
                     <div class="filter-group">
                         <label>Organisme:</label>
                         <select id="pokemon-graded-org-filter">
                             <option value="">Tous</option>
                             <option value="PSA">PSA</option>
-                            <option value="BGS">BGS</option>
+                            <option value="PCA">PCA</option>
                             <option value="CGC">CGC</option>
                             <option value="SGC">SGC</option>
                             <option value="CA">CA</option>
                             <option value="SFG">SFG</option>
+                            <option value="SCA">SCA</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -263,20 +329,42 @@
                     <table id="pokemon-graded-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Bloc</th>
-                                <th>Nom</th>
-                                <th>Type</th>
-                                <th>Organisme</th>
-                                <th>Cotation</th>
-                                <th>Prix Achat</th>
-                                <th>Prix Vente</th>
-                                <th>Date Achat</th>
-                                <th>Date Vente</th>
-                                <th>Différence</th>
-                                <th>État</th>
-                                <th>Langue</th>
-                                <th>Note</th>
+                                <th class="sortable" data-sort="status">
+                                    Status <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="bloc">
+                                    Bloc <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="nom">
+                                    Nom <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="type">
+                                    Type <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="organisme">
+                                    Organisme <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="cotation">
+                                    Cotation <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixAchat">
+                                    Prix Achat <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixVente">
+                                    Prix Vente <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="difference">
+                                    Différence <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="etat">
+                                    État <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="langue">
+                                    Langue <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="note">
+                                    Note <i class="sort-icon"></i>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -294,11 +382,20 @@
             <div id="onepiece-items" class="tab-content">
                 <div class="tab-header">
                     <h2><i class="fas fa-ship"></i> Stock Items One Piece</h2>
-                    <button class="add-btn" onclick="openModal('onepiece-items')">
-                        <i class="fas fa-plus"></i> Ajouter
-                    </button>
+                    <div class="header-actions">
+                        <button class="import-btn" onclick="openImportModal('onepiece-items')">
+                            <i class="fas fa-file-import"></i> Import Google Sheets
+                        </button>
+                        <button class="add-btn" onclick="openModal('onepiece-items')">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
                 </div>
                 <div class="filters glass-card">
+                    <div class="search-group">
+                        <label for="search-onepiece-items">Recherche:</label>
+                        <input type="text" id="search-onepiece-items" placeholder="Rechercher par nom, type, bloc...">
+                    </div>
                     <div class="filter-group">
                         <label>Status:</label>
                         <select id="onepiece-items-status-filter">
@@ -315,6 +412,7 @@
                             <option value="FR">FR</option>
                             <option value="EN">EN</option>
                             <option value="JAP">JAP</option>
+                            <option value="CH">CH</option>
                         </select>
                     </div>
                 </div>
@@ -322,18 +420,36 @@
                     <table id="onepiece-items-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Bloc</th>
-                                <th>Nom</th>
-                                <th>Type</th>
-                                <th>Prix Achat</th>
-                                <th>Prix Vente</th>
-                                <th>Date Achat</th>
-                                <th>Date Vente</th>
-                                <th>Différence</th>
-                                <th>État</th>
-                                <th>Langue</th>
-                                <th>Note</th>
+                                <th class="sortable" data-sort="status">
+                                    Status <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="bloc">
+                                    Bloc <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="nom">
+                                    Nom <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="type">
+                                    Type <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixAchat">
+                                    Prix Achat <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixVente">
+                                    Prix Vente <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="difference">
+                                    Différence <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="etat">
+                                    État <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="langue">
+                                    Langue <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="note">
+                                    Note <i class="sort-icon"></i>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -351,21 +467,31 @@
             <div id="onepiece-graded" class="tab-content">
                 <div class="tab-header">
                     <h2><i class="fas fa-crown"></i> Stock Cartes Gradées One Piece</h2>
-                    <button class="add-btn" onclick="openModal('onepiece-graded')">
-                        <i class="fas fa-plus"></i> Ajouter
-                    </button>
+                    <div class="header-actions">
+                        <button class="import-btn" onclick="openImportModal('onepiece-graded')">
+                            <i class="fas fa-file-import"></i> Import Google Sheets
+                        </button>
+                        <button class="add-btn" onclick="openModal('onepiece-graded')">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
                 </div>
                 <div class="filters glass-card">
+                    <div class="search-group">
+                        <label for="search-onepiece-graded">Recherche:</label>
+                        <input type="text" id="search-onepiece-graded" placeholder="Rechercher par nom, organisme, cotation...">
+                    </div>
                     <div class="filter-group">
                         <label>Organisme:</label>
                         <select id="onepiece-graded-org-filter">
                             <option value="">Tous</option>
                             <option value="PSA">PSA</option>
-                            <option value="BGS">BGS</option>
+                            <option value="PCA">PCA</option>
                             <option value="CGC">CGC</option>
                             <option value="SGC">SGC</option>
                             <option value="CA">CA</option>
                             <option value="SFG">SFG</option>
+                            <option value="SCA">SCA</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -400,20 +526,42 @@
                     <table id="onepiece-graded-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Bloc</th>
-                                <th>Nom</th>
-                                <th>Type</th>
-                                <th>Organisme</th>
-                                <th>Cotation</th>
-                                <th>Prix Achat</th>
-                                <th>Prix Vente</th>
-                                <th>Date Achat</th>
-                                <th>Date Vente</th>
-                                <th>Différence</th>
-                                <th>État</th>
-                                <th>Langue</th>
-                                <th>Note</th>
+                                <th class="sortable" data-sort="status">
+                                    Status <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="bloc">
+                                    Bloc <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="nom">
+                                    Nom <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="type">
+                                    Type <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="organisme">
+                                    Organisme <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="cotation">
+                                    Cotation <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixAchat">
+                                    Prix Achat <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="prixVente">
+                                    Prix Vente <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="difference">
+                                    Différence <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="etat">
+                                    État <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="langue">
+                                    Langue <i class="sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-sort="note">
+                                    Note <i class="sort-icon"></i>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -430,7 +578,7 @@
         
         <footer class="glass-footer">
             <div class="footer-content">
-                <p>&copy; 2024 GrandDex - Version 1.0.0</p>
+                <p>&copy; 2024 GrandDex - Version 1.0.2 </p>
                 <p>Gestionnaire d'Inventaire Pokémon & One Piece</p>
             </div>
         </footer>
@@ -484,11 +632,12 @@
                         <label for="organisme">Organisme</label>
                         <select id="organisme">
                             <option value="PSA">PSA</option>
-                            <option value="BGS">BGS</option>
+                            <option value="PCA">PCA</option>
                             <option value="CGC">CGC</option>
                             <option value="SGC">SGC</option>
                             <option value="CA">CA</option>
                             <option value="SFG">SFG</option>
+                            <option value="SCA">SCA</option>
                         </select>
                     </div>
                     <div class="form-group graded-only" style="display: none;">
@@ -536,18 +685,115 @@
                             <option value="FR">FR</option>
                             <option value="EN">EN</option>
                             <option value="JAP">JAP</option>
+                            <option value="CH">CH</option>
                         </select>
                     </div>
                     <div class="form-group full-width">
                         <label for="note">Note</label>
                         <textarea id="note" rows="3"></textarea>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="quantite">Quantité</label>
+                        <input type="number" id="quantite" min="1" max="100" value="1" required>
+                        <small class="form-help">Nombre d'entrées à créer</small>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button>
-                    <button type="submit" class="btn-primary">Enregistrer</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span id="submit-text">Enregistrer</span>
+                    </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content glass-card delete-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirmation de suppression</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="delete-content">
+                <p>Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+                <div class="item-details">
+                    <strong id="delete-item-name"></strong>
+                    <span id="delete-item-category"></span>
+                </div>
+                <p class="warning-text">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <button type="button" class="btn-danger" onclick="confirmDelete()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'import Google Sheets -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content glass-card import-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-import"></i> Import Google Sheets</h3>
+                <button class="close-btn" onclick="closeImportModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="import-content">
+                <div class="import-instructions">
+                    <h4>Instructions d'import :</h4>
+                    <div class="format-examples">
+                        <div class="format-example">
+                            <strong>Items Pokémon :</strong>
+                            <code>Status | Bloc | Type | Nom | Prix Achat | Prix Vente | Différence | État | Langue</code>
+                        </div>
+                        <div class="format-example">
+                            <strong>Cartes Pokémon :</strong>
+                            <code>Langue | Status | Bloc | Nom | Type | Prix Achat | Prix Vente | Différence | État</code>
+                        </div>
+                        <div class="format-example">
+                            <strong>Cartes Gradées :</strong>
+                            <code>Status | Nom | Organisme | Cotation | Type | Prix Achat | Prix Vente | Différence | État | Note | Langue</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="import-options">
+                    <div class="form-group">
+                        <label for="import-data">Données à importer :</label>
+                        <textarea id="import-data" rows="10" placeholder="Collez ici vos données Google Sheets (une ligne = un élément)"></textarea>
+                        <small class="form-help">Copiez vos données depuis Google Sheets et collez-les ici</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="import-separator">Séparateur de colonnes :</label>
+                        <select id="import-separator">
+                            <option value="tab">Tabulation (recommandé)</option>
+                            <option value="comma">Virgule (,)</option>
+                            <option value="semicolon">Point-virgule (;)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="import-preview">
+                        <h4>Aperçu des données :</h4>
+                        <div id="preview-table" class="preview-container"></div>
+                    </div>
+                </div>
+                
+                <div class="import-actions">
+                    <button type="button" class="btn-secondary" onclick="closeImportModal()">Annuler</button>
+                    <button type="button" class="btn-primary" onclick="previewImport()">
+                        <i class="fas fa-eye"></i> Aperçu
+                    </button>
+                    <button type="button" class="btn-success" onclick="executeImport()" id="execute-import-btn" disabled>
+                        <i class="fas fa-check"></i> Importer
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

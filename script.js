@@ -10,10 +10,10 @@ const TYPE_CONFIG = {
         'Valisette'
     ],
     'pokemon-cards': [
-        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace'
+        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace', 'Turbo'
     ],
     'pokemon-graded': [
-        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace'
+        'AR', 'FA', 'ALT', 'V', 'VMAX', 'VSTAR', 'GOLD', 'GX', 'Promo', 'EX', 'Shiny', 'Ace', 'Turbo'
     ],
     'onepiece-items': [
         'Display', 'ETB', 'Booster', 'Mini Tin', 'Display Mini Tins', 'Coffret'

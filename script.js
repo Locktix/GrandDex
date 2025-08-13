@@ -132,10 +132,27 @@ function setupEventListeners() {
     // Filtres
     setupFilters();
 
-    // Fermeture du modal
-    document.getElementById('modal').addEventListener('click', (e) => {
-        if (e.target.id === 'modal') {
-            closeModal();
+    // Fermeture du modal principal (formulaire) - NE PAS fermer au clic extérieur
+    // document.getElementById('modal').addEventListener('click', (e) => {
+    //     if (e.target.id === 'modal') {
+    //         closeModal();
+    //     }
+    // });
+    
+    // Gestion de la touche Échap pour fermer le formulaire
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('modal');
+            const deleteModal = document.getElementById('delete-modal');
+            const importModal = document.getElementById('import-modal');
+            
+            if (modal.style.display === 'block') {
+                closeModal();
+            } else if (deleteModal.style.display === 'block') {
+                closeDeleteModal();
+            } else if (importModal.style.display === 'block') {
+                closeImportModal();
+            }
         }
     });
     
